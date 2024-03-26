@@ -5,72 +5,55 @@ import { useAuth } from "../Provider/authProvider";
 
 const api_url = API_END_POINT;
 export const useFetchCategories = () => {
-  
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["categories"],
-    queryFn: async () =>
-      await axios.get(`${api_url}/categories`),
-    
+    queryFn: async () => await axios.get(`${api_url}/categories`),
   });
 
-  return { data };
+  return { data, isLoading };
 };
 
 export const useMutationCategory = () => {
-
-  
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["category"],
-    
 
     mutationFn: (payload) => {
       return axios.post(`http://localhost:8080/category`, payload);
     },
-  
-  
   });
-  return { mutate };
+  return { mutate, isPending };
 };
-export const useFetchFoods = (id:string) =>{
-  
-  const { data } = useQuery({
+export const useFetchFoods = (id: string) => {
+  const { data, isLoading } = useQuery({
     queryKey: ["foods"],
-    queryFn: async () =>
-      await axios.get(`${api_url}/foods/${id}`),
-    
+    queryFn: async () => await axios.get(`${api_url}/foods/${id}`),
   });
 
-  return { data };
+  return { data, isLoading };
 };
 
 export const useMutationFood = () => {
-
-
-  const { mutate } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["food"],
 
     mutationFn: (payload) => {
       return axios.post(`http://localhost:8080/food`, payload);
     },
-
-
   });
-  return { mutate };
+  return { mutate, isPending };
 };
 
-// export const usePatchFood = () => {
-//   const { mutate } = useMutation({
-//     mutationFn: (payload) => {
-//       return axios.patch(`${api_url}/food`, payload);
-//     },
-//     onSuccess: () => {
-      
-//     },
-//     onError: (err) => {
-//       alert(err);
-//     },
-//   });
-//   return {
-//   mutate
-//   };
-// };
+export const usePatchFood = () => {
+  const { mutate } = useMutation({
+    mutationFn: (payload) => {
+      return axios.patch(`http://localhost:8080/food`, payload);
+    },
+    onSuccess: () => {},
+    onError: (err) => {
+      alert(err);
+    },
+  });
+  return {
+    mutate,
+  };
+};

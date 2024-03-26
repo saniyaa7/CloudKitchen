@@ -10,12 +10,12 @@ const initialValue = {
   description: "d",
   is_active: 1
 };
- 
+
 
 function AddCategory({ isOpen, onClose }) {
   const [isConflict, setIsConflict] = useState(false);
   const navigate = useNavigate();
-  const { mutate } = useMutationCategory(); // Ensure you import and define useMutation properly
+  const { mutate, isPending } = useMutationCategory(); // Ensure you import and define useMutation properly
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
   const [values, setValues] = useState(initialValue); // State to store form values
@@ -35,9 +35,9 @@ function AddCategory({ isOpen, onClose }) {
       if (!values.name || !values.description) {
         toast({
           title: "All fields are required.",
-          position:"top",
+          position: "top",
           status: "error",
-          duration: 1000, 
+          duration: 1000,
           isClosable: true,
         });
         return;
@@ -87,7 +87,7 @@ function AddCategory({ isOpen, onClose }) {
                 onChange={handleChange}
                 required
               />
-              
+
             </FormControl>
             <FormControl isRequired>
               <FormLabel>Image URL</FormLabel>
@@ -97,13 +97,13 @@ function AddCategory({ isOpen, onClose }) {
                 onChange={handleChange}
                 required
               />
-            
+
             </FormControl>
 
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+            <Button colorScheme='blue' mr={3} onClick={handleSubmit} disabled={isPending}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>

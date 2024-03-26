@@ -16,7 +16,7 @@ function AddFood({ isOpen, onClose }) {
   const [isConflict, setIsConflict] = useState(false);
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-  const { mutate } = useMutationFood();
+  const { mutate, isPending } = useMutationFood();
   const [values, setValues] = useState({
     category_id: parseInt(id),
     price: 0,
@@ -173,7 +173,7 @@ function AddFood({ isOpen, onClose }) {
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={handleSubmit}>
+            <Button colorScheme='blue' mr={3} onClick={handleSubmit} disabled={isPending}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>

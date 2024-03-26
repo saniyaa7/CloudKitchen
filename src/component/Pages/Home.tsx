@@ -8,30 +8,24 @@ import {
   CardFooter,
   CardHeader,
   Image,
-  
 } from "@chakra-ui/react";
 import { useFetchCategories } from "../../Hooks/food.hook";
 import { useEffect, useReducer } from "react";
 import { ICategory } from "../../Type/type";
-import { useLocation ,Link} from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import Food from "./Food";
-
-
+import MySpinner from "./MySpinner";
 
 interface State {
-
   categories: ICategory[];
 }
-type Action =
-  | { type: "SET_CATEGORIES"; payload: ICategory[] }
-  
-const initialState: State = {
+type Action = { type: "SET_CATEGORIES"; payload: ICategory[] };
 
+const initialState: State = {
   categories: [],
 };
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
-
     case "SET_CATEGORIES":
       return { ...state, categories: action.payload };
     default:
@@ -39,18 +33,21 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
-
 const Home = () => {
   const location = useLocation();
   const user = location.state && location.state.user;
   console.log(user);
-  const { data } = useFetchCategories(); // Handle potential errors
+  const { data, isLoading } = useFetchCategories(); // Handle potential errors
   const [state, dispatch] = useReducer(reducer, initialState);
   const { categories } = state;
 
   useEffect(() => {
     if (data) dispatch({ type: "SET_CATEGORIES", payload: data.data });
   }, [data]);
+
+  if (isLoading) {
+    return <MySpinner />;
+  }
 
   return (
     <SimpleGrid
@@ -63,12 +60,10 @@ const Home = () => {
             <CardHeader>
               <Heading size="md">{category.name}</Heading>
             </CardHeader>
-            <Image
-              src={category.description}
-              alt={category.name}
-            />
+            <Image src={category.description} alt={category.name} />
             <CardBody>
-              <Text>{category.description}</Text> </CardBody>
+              <Text>{category.description}</Text>{" "}
+            </CardBody>
           </Card>
         </Link>
       ))}

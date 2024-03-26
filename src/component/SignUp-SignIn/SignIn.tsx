@@ -1,25 +1,83 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { IUser } from "../../Type/type";
-import { SiginMutation } from "../../Hooks/register.hook";
+import { SiginMutation, useFetchUser } from "../../Hooks/register.hook";
+import { UserInitialValues } from "../../Type/initialValues";
+import { useAuth } from "../../Provider/authProvider";
+interface State {
+  user: IUser;
+  
+}
+type Action =
 
-function LoginPage() {
-  const authToken=  localStorage.getItem("token");
+  | { type: "SET_USER"; payload: IUser };
+const initialState: State = {
+  user: UserInitialValues,
+
+};
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "SET_USER":
+      // Merge the new user data with the existing user state
+      return { ...state, user:action.payload };
+    default:
+      return state;
+  }
+};
+
+
+function SignIn() {
+
+  const [ state, dispatch ] = useReducer(reducer,initialState);
+  const {user}=state;
   const { mutate, isError, isPending } = SiginMutation();
   const navigate = useNavigate();
+  const authToken=useAuth();
+   const {data}=useFetchUser();
+  
+  
+  useEffect(()=>{
+    if(data)
+    {
+      dispatch({ type: "SET_USER", payload: data.data });
+      localStorage.setItem("user_id",user.id+"");
+    }
+    
+    
+  
+
+  },[data,dispatch])
+  
+
 
   const validationSchema = Yup.object().shape({
-    email: Yup.string().email("Invalid email").required("Email is required"),
-    password: Yup.string().required("Password is required"),
+    email: Yup.string()
+    .email("Invalid email")
+    .required("Email is required")
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid Email"),
+    password: Yup.string()
+    .required("Password is required")
+    .matches(
+      /^(?=.*[a-zA-Z].*[a-zA-Z].*[a-zA-Z].*[a-zA-Z])/,
+      "Password must contain at least 4 alphabet"
+    )
+    .matches(
+      /^((?=.*[!@#$%^&*()-_+=?]))/,
+      "Password must contain at least 1 special character"
+    )
+    .matches(
+      /^((?=.*[0-9].*[0-9].*[0-9]))/,
+      "Password must contain at least 3 Number"
+    ),
   });
   const initialValues = {
-    email: "saniyachaudhari07@gmail.com",
-    password: "Saniya@123",
+    email: "saniyachaudhari@gmail.com",
+    password: "Saniya@1234",
   };
   const handleSubmit = (values: any) => {
-    localStorage.setItem("token", "xyzertyuiop[thjklllhgfsdfghjkl;'");
+    
 
     const payload = {
       email: values.email,
@@ -28,15 +86,12 @@ function LoginPage() {
     if (!isPending) {
       mutate(payload, {
         onSuccess: () => {
-          navigate("/home");
+          navigate("/home", { state: { user: user } }); 
         },
       });
     }
   };
 
-  useEffect(()=>{
-    authToken && navigate('/home')
-  })
 
   return (
     <>
@@ -141,7 +196,9 @@ function LoginPage() {
         </div>
       </div>
     </section></>
+    
   );
 }
 
-export default LoginPage;
+
+export default SignIn;

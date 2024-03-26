@@ -227,7 +227,7 @@ function SignUpForm() {
                             />
                           </div>
                           <p>
-                            Have an Account? <Link to={"/"}>SignIn</Link>
+                            Have an Account? <Link to={"/signin"}>SignIn</Link>
                           </p>
 
                           <button

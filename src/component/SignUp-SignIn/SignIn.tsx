@@ -43,6 +43,7 @@ function SignIn() {
     {
       dispatch({ type: "SET_USER", payload: data.data });
       localStorage.setItem("user_id",user.id+"");
+      localStorage.setItem("role",user.role+"");
     }
     
     

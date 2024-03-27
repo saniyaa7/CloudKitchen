@@ -71,7 +71,7 @@ function Food() {
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
   const isCustomer=localStorage.getItem("role")==="customer"?true:false;
-  
+  const isAdmin=localStorage.getItem("role")==="admin"?true:false;
 
 
   const handleAvailability = (foodItemId: number, isAvailable: boolean) => {
@@ -115,7 +115,9 @@ function Food() {
     } else {
       return item.name.toLowerCase().includes(searchQuery.toLowerCase());
     }
+    
   });
+  console.log(filteredFood)
   const handlePriceRange = (range: string | null) => {
     dispatch({ type: "SET_PRICE", payload: range });
   };
@@ -137,7 +139,7 @@ function Food() {
     disabled={isPureVeg} // Disable when Pure Veg is selected
     onClick={() => dispatch({ type: "SET_NON_VEG", payload: !isPureNonVeg })}
   >
-    Pure Non-Veg
+     Non-Veg
   </Button>
 
         <Button
@@ -162,8 +164,9 @@ function Food() {
       templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
       p={4} // Add padding to the container
     >
+      
       {filteredFood.map((foodItem: IFood, index: number) => (
-    (isCustomer && Boolean(foodItem.is_avail != 0) ) || !isCustomer && (
+  (  (isCustomer && Boolean(foodItem.is_avail != 0) ) || isAdmin ) &&(
         <Box
           borderWidth="1px"
           borderRadius="lg"
@@ -218,6 +221,7 @@ function Food() {
           >
             {foodItem.is_veg ? "Veg" : "Non-Veg"}
           </Box>
+          
         </Box>)
       ))}
     </SimpleGrid></>

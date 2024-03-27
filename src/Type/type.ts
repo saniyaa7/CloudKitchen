@@ -24,5 +24,6 @@ export interface IFood{
     is_veg:number,
     is_avail:number,
      description:string,
-    img_url:string
+    img_url:string,
+    quantity: number;
 }

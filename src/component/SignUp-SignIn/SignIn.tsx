@@ -5,7 +5,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { IUser } from "../../Type/type";
 import { SiginMutation, useFetchUser } from "../../Hooks/register.hook";
 import { UserInitialValues } from "../../Type/initialValues";
-import { useAuth } from "../../Provider/authProvider";
 interface State {
   user: IUser;
   
@@ -32,26 +31,14 @@ function SignIn() {
 
   const [ state, dispatch ] = useReducer(reducer,initialState);
   const {user}=state;
-  const { mutate, isError, isPending } = SiginMutation();
+  const { mutate, isError, isPending ,isSuccess} = SiginMutation();
   const navigate = useNavigate();
-  const authToken=useAuth();
-   const {data}=useFetchUser();
   
   
-  useEffect(()=>{
-    if(data)
-    {
-      dispatch({ type: "SET_USER", payload: data.data });
-      localStorage.setItem("user_id",user.id+"");
-      localStorage.setItem("role",user.role+"");
-    }
-    
-    
+  
   
 
-  },[data,dispatch])
   
-
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -74,8 +61,8 @@ function SignIn() {
     ),
   });
   const initialValues = {
-    email: "saniyachaudhari@gmail.com",
-    password: "Saniya@1234",
+    email: "samnitpatil@gmail.com",
+    password: "Samnit@1234",
   };
   const handleSubmit = (values: any) => {
     
@@ -87,6 +74,8 @@ function SignIn() {
     if (!isPending) {
       mutate(payload, {
         onSuccess: () => {
+        
+          console.log(user.role);
           navigate("/home", { state: { user: user } }); 
         },
       });

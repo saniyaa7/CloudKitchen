@@ -1,7 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { API_END_POINT } from "../constant/constant";
-import { useAuth } from "../Provider/authProvider";
+
+
 
 const api_url = API_END_POINT;
 export const useFetchCategories = () => {

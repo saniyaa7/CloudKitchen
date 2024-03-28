@@ -1,5 +1,4 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { useAuth } from "../Provider/authProvider";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Home from "../component/Pages/Home";
 import Logout from "../component/SignUp-SignIn/Logout";
@@ -9,13 +8,15 @@ import MyNavBar from "../component/Header/MyNavBar";
 import SignIn from "../component/SignUp-SignIn/SignIn";
 import Food from "../component/Pages/Food";
 import Profile from "../component/Pages/Profile";
+import Payment from "../component/Pages/Payment";
+import CartPage from "../component/Pages/AddToCart";
 
 
 
 const Routes = () => {
 
 
-  const { token } = useAuth();
+  const token  = localStorage.getItem('token')
 
   // Define public routes accessible to all users
   const routesForPublic = [
@@ -69,6 +70,14 @@ const Routes = () => {
           path: `/user/:id`,
           element: <Profile/>,
         },
+        {
+          path: `/payment`,
+          element: <Payment/>,
+        },
+        {
+          path: '/cart',
+          element :<CartPage/>
+        }
       ],
     },
   ];

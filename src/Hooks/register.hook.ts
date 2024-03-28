@@ -1,10 +1,16 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { API_END_POINT } from "../constant/constant";
 import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../Provider/authProvider";
 const api_url = `${API_END_POINT}user/`;
+
+
+
+export const setTokenInHeader = (token:string) => {
+  axios.defaults.headers.common["Authorization"] =  token;
+
+}
 
 export const SignupMutation = () => {
   const { mutate, isError, isPending } = useMutation({
@@ -22,8 +28,7 @@ export const SignupMutation = () => {
 
 export const SiginMutation = () => {
   const navigate = useNavigate();
-  const { setToken } = useAuth();
-  const { mutate, isError, isPending } = useMutation({
+  const { mutate, isError, isPending ,isSuccess} = useMutation({
     mutationKey: ["login"],
 
     mutationFn: (payload: any) => {
@@ -31,7 +36,9 @@ export const SiginMutation = () => {
     },
     onSuccess: (data) => {
       const authToken = data.data.Token;
-      setToken(authToken);
+      localStorage.setItem('token',authToken)
+      // setToken(authToken);
+      setTokenInHeader(authToken)
       console.log(authToken);
       navigate("/home", { replace: true });
     },
@@ -41,7 +48,7 @@ export const SiginMutation = () => {
       toast.error(`${err?.response?.data}`);
     },
   });
-  return { mutate, isError, isPending };
+  return { mutate, isError, isPending,isSuccess };
 };
 
 export const useFetchUser = () => {
@@ -50,6 +57,7 @@ export const useFetchUser = () => {
     queryKey: ["user"],
     queryFn: async () =>
       await axios.get(`${api_url}me`),
+    
     
   });
 

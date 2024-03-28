@@ -14,12 +14,12 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      console.log("login token:",token)
-      axios.defaults.headers.common["Authorization"] =  token;
-      localStorage.setItem('token',token);
+      // console.log("login token:",token)
+      // axios.defaults.headers.common["Authorization"] =  token;
+      // localStorage.setItem('token',token);
     } else {
-      delete axios.defaults.headers.common["Authorization"];
-      localStorage.removeItem('token')
+      // delete axios.defaults.headers.common["Authorization"];
+      // localStorage.removeItem('token')
     }
   }, [token]);
 

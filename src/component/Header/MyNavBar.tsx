@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Flex,
@@ -25,6 +25,9 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AddCategory from "../Pages/Form/AddCategory";
 import AddFood from "../Pages/Form/AddFood";
+import { useFetchUser } from "../../Hooks/register.hook";
+import MySpinner from "../Pages/MySpinner";
+import WalkthroughPopover from "../Pages/AddToCart";
 
 const Links = ["home"];
 
@@ -56,17 +59,24 @@ export default function WithAction() {
   const isFoodPage = location.pathname.includes("/food");
   const isHomePage = location.pathname.includes("/home");
   const isUserPage = location.pathname.includes("/user");
-  const isAdmin=localStorage.getItem("role")=="admin"?true:false;
 
-  const id = localStorage.getItem("user_id");
+  const {data:userData,isLoading}=useFetchUser();
+  const isAdmin = useMemo(()=>{
+    if(userData)
+  return userData?.data.role==="admin"?true:false;
+
+  },[userData])
+  
+  const id = userData?.data.id
   const handleSignOut = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
     navigate("/signin");
   };
 
   const handleAddCategoryClick = () => {
     setShowAddCategory(true);
   };
+
 
   const handleSearch = () => {
     // Implement search functionality here
@@ -75,10 +85,15 @@ export default function WithAction() {
     navigate(`${location.pathname}?search=${searchQuery}`);
   };
   console.log(isAdmin);
+  if(isLoading)
+  {
+  return(  <MySpinner/>);
+  }
 
   return (
     <>
-      <Box bg={useColorModeValue("gray.100", "gray.900")} px={4}>
+    {!isLoading &&
+      <Box bg={"gray.100"} px={4}>
         <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
           <IconButton
             size={"md"}
@@ -144,6 +159,21 @@ export default function WithAction() {
                 {isFoodPage ? "ADD Food" : "ADD Category"}
               </Button>
             )}
+           {
+              !isAdmin && (
+                <Button
+                variant={"solid"}
+                colorScheme={"yellow"}
+                size={"sm"}
+                mr={4}
+                leftIcon={<AddIcon />}
+                onClick={()=>navigate('/cart')}
+              
+              >
+                CART
+              </Button>
+              )
+            }
 
             <Menu>
               <MenuButton
@@ -153,7 +183,7 @@ export default function WithAction() {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar bg="red.500" />
+                  <Avatar size="md" name={`${userData?.data.firstname} ${userData?.data.lastname}`} />
               </MenuButton>
               <MenuList>
                 <MenuItem onClick={() => navigate(`/user/${id}`)}>
@@ -165,14 +195,8 @@ export default function WithAction() {
             </Menu>
           </Flex>
         </Flex>
-        <Box pb={4} display={{ md: "none" }}>
-          <Stack as={"nav"} spacing={4}>
-            {Links.map((link) => (
-              <NavLink key={link}>{link}</NavLink>
-            ))}
-          </Stack>
-        </Box>
-      </Box>
+      
+      </Box>}
 
       {isAdmin && !isFoodPage ? (
         <AddCategory
@@ -185,6 +209,7 @@ export default function WithAction() {
           onClose={() => setShowAddCategory(false)}
         />
       )}
+      
     </>
   );
 }

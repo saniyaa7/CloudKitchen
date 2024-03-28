@@ -3,8 +3,16 @@ import AuthProvider from "./Provider/authProvider";
 import Routes from "./routes";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MyNavBar from "./component/Header/MyNavBar";
+import { useEffect } from "react";
+import { setTokenInHeader } from "./Hooks/register.hook";
 
 function App() {
+  const token = localStorage.getItem('token')
+
+  useEffect(()=>{
+    token && setTokenInHeader(token)
+  },[token])
+
   return (
     <ChakraProvider>
     

@@ -30,7 +30,7 @@ function AddFood({ isOpen, onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const parsedValue = name === 'is_avail' || name === 'price' ? parseInt(value) : value;
+    const parsedValue = name === 'is_avail' || name === 'price' || name==='is_veg' ? parseInt(value) : value;
     setValues({
       ...values,
       [name]: parsedValue
@@ -133,12 +133,14 @@ function AddFood({ isOpen, onClose }) {
               <FormLabel>Food Type</FormLabel>
               <Select
                 name="is_veg"
-                value={values.is_veg ? 1 : 0}
+                value={values.is_veg}
                 onChange={handleChange}
+              
               >
-                <option value={true}>Veg</option>
-                <option value={false}>Non-Veg</option>
+                <option value={1}>Veg</option>
+                <option value={0}>Non-Veg</option>
               </Select>
+
             </FormControl>
 
 
@@ -151,7 +153,7 @@ function AddFood({ isOpen, onClose }) {
               <NumberInput defaultValue={0} >
                 <NumberInputField name="is_avail"
                   placeholder="Enter availability"
-                  value={values.is_avail}
+                  value={values.is_avail ? 1 : 0}
                   onChange={handleChange} />
                 <NumberInputStepper>
                   <NumberIncrementStepper />

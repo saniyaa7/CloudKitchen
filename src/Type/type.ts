@@ -25,5 +25,17 @@ export interface IFood{
     is_avail:number,
      description:string,
     img_url:string,
-    quantity: number;
+    quantity?: number;
+}
+
+export interface IOrderItem{
+  id:number,
+  quantity:number,
+  foodname?:string,
+  price?:number
+}
+
+export interface ICheckout{
+  payment_method:string,
+  location:string
 }

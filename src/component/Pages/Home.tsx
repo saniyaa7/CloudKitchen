@@ -15,6 +15,7 @@ import { ICategory } from "../../Type/type";
 import { useLocation, Link } from "react-router-dom";
 import Food from "./Food";
 import MySpinner from "./MySpinner";
+import { useFetchUser } from "../../Hooks/register.hook";
 
 interface State {
   categories: ICategory[];
@@ -36,20 +37,26 @@ const reducer = (state: State, action: Action): State => {
 const Home = () => {
   const location = useLocation();
   const user = location.state && location.state.user;
-  console.log(user);
+  console.log("user",user);
   const { data, isLoading } = useFetchCategories(); // Handle potential errors
   const [state, dispatch] = useReducer(reducer, initialState);
   const { categories } = state;
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search') || '';
 
+  
+  
+    
+
+
+  
+
+
   useEffect(() => {
     if (data) dispatch({ type: "SET_CATEGORIES", payload: data.data });
   }, [data]);
 
-  if (isLoading) {
-    return <MySpinner />;
-  }
+  
   const serachFilter = categories.filter((item) => {
     if (searchQuery === '') {
       return true; // Include all items when search query is empty

@@ -4,7 +4,7 @@ import Routes from "./routes";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MyNavBar from "./component/Header/MyNavBar";
 import { useEffect } from "react";
-import { setTokenInHeader } from "./Hooks/register.hook";
+import { setTokenInHeader } from "./Hooks/authentication.hook";
 
 function App() {
   const token = localStorage.getItem('token')

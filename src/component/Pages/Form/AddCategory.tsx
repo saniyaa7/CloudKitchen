@@ -1,27 +1,33 @@
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useDisclosure, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, Alert, AlertIcon, AlertDialogOverlay, AlertDialog, AlertDialogContent, AlertDialogFooter, AlertDialogBody, AlertDialogHeader, useToast } from "@chakra-ui/react";
 import axios from "axios"; // Import axios for HTTP requests
-import { useMutationCategory } from "../../../Hooks/food.hook";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { usePostCategory } from "../../../Hooks/category.hook";
+import { ICategory, usePostCategoryRequest } from "../../../Type/type";
 
-const initialValue = {
-  name: "Abc",
-  description: "d",
-  is_active: 1
+const initialValue:usePostCategoryRequest = {
+  name: "",
+  description: "",
+  is_active: 0
 };
+interface AddCategoryProps {
+  isOpen: boolean;
+  onClose: () => void;
+  
+}
 
 
-function AddCategory({ isOpen, onClose }) {
+function AddCategory({ isOpen, onClose }:AddCategoryProps) {
   const [isConflict, setIsConflict] = useState(false);
   const navigate = useNavigate();
-  const { mutate, isPending } = useMutationCategory(); // Ensure you import and define useMutation properly
+  const { mutate, isPending } = usePostCategory(); // Ensure you import and define useMutation properly
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-  const [values, setValues] = useState(initialValue); // State to store form values
+  const [values, setValues] = useState<usePostCategoryRequest>(initialValue); // State to store form values
   const toast = useToast()
 
-  const handleChange = (e) => {
+  const handleChange = (e:any) => {
     const { name, value } = e.target;
     setValues({
       ...values,
@@ -49,7 +55,7 @@ function AddCategory({ isOpen, onClose }) {
           navigate('/home'); // Navigate to a specific route upon successful submission
         },
         onError: (error) => {
-          if (error.response.status === 409) {
+          if (axios.isAxiosError(error) && error.response?.status === 409)  {
             setIsConflict(true);
           } else {
             console.error("Error submitting form:", error);

@@ -3,7 +3,7 @@ import { API_END_POINT } from "../constant/constant";
 import axios, { AxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-const api_url = `${API_END_POINT}user/`;
+const api_url = `${API_END_POINT}/user`;
 
 
 
@@ -12,12 +12,12 @@ export const setTokenInHeader = (token:string) => {
 
 }
 
-export const SignupMutation = () => {
+export const useSignupUser = () => {
   const { mutate, isError, isPending } = useMutation({
     mutationKey: ["signup"],
 
     mutationFn: async (payload: any) => {
-      return await axios.post(`${api_url}signup`, payload);
+      return await axios.post(`${api_url}/signup`, payload);
     },
     onError: (err: AxiosError) => {
       toast.error(`${err.response?.data}`);
@@ -26,13 +26,13 @@ export const SignupMutation = () => {
   return { mutate, isError, isPending };
 };
 
-export const SiginMutation = () => {
+export const useSigninUser = () => {
   const navigate = useNavigate();
   const { mutate, isError, isPending ,isSuccess} = useMutation({
     mutationKey: ["login"],
 
     mutationFn: (payload: any) => {
-      return axios.post(`${api_url}login`, payload);
+      return axios.post(`${api_url}/login`, payload);
     },
     onSuccess: (data) => {
       const authToken = data.data.Token;
@@ -51,15 +51,3 @@ export const SiginMutation = () => {
   return { mutate, isError, isPending,isSuccess };
 };
 
-export const useFetchUser = () => {
-  
-  const { data ,isLoading} = useQuery({
-    queryKey: ["user"],
-    queryFn: async () =>
-      await axios.get(`${api_url}me`),
-    
-    
-  });
-
-  return { data,isLoading };
-};

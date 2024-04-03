@@ -25,16 +25,16 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import AddCategory from "../Pages/Form/AddCategory";
 import AddFood from "../Pages/Form/AddFood";
-import { useFetchUser } from "../../Hooks/register.hook";
 import MySpinner from "../Pages/MySpinner";
-import WalkthroughPopover from "../Pages/AddToCart";
+import WalkthroughPopover from "../Pages/Order/AddToCart";
+import { useGetUser } from "../../Hooks/user.hook";
 
 const Links = ["home"];
 
 const NavLink = (props: any) => {
   const { children } = props;
   return (
-    <Box
+    <Link to={`/${children}`}><Box
       as="a"
       px={2}
       py={1}
@@ -43,10 +43,11 @@ const NavLink = (props: any) => {
         textDecoration: "none",
         bg: useColorModeValue("gray.200", "gray.700"),
       }}
-      href={`/${children}`}
-    >
+      
+
+>
       {children}
-    </Box>
+    </Box></Link>
   );
 };
 
@@ -59,15 +60,16 @@ export default function WithAction() {
   const isFoodPage = location.pathname.includes("/food");
   const isHomePage = location.pathname.includes("/home");
   const isUserPage = location.pathname.includes("/user");
+  const isCartPage = location.pathname.includes("/cart");
+  const isPaymentPage = location.pathname.includes("/payment");
 
-  const {data:userData,isLoading}=useFetchUser();
-  const isAdmin = useMemo(()=>{
-    if(userData)
-  return userData?.data.role==="admin"?true:false;
 
-  },[userData])
-  
-  const id = userData?.data.id
+  const { data: userData, isLoading } = useGetUser();
+  const isAdmin = useMemo(() => {
+    if (userData) return userData?.data.role === "admin" ? true : false;
+  }, [userData]);
+
+  const id = userData?.data.id;
   const handleSignOut = () => {
     localStorage.removeItem("token");
     navigate("/signin");
@@ -77,7 +79,6 @@ export default function WithAction() {
     setShowAddCategory(true);
   };
 
-
   const handleSearch = () => {
     // Implement search functionality here
     console.log("Searching for:", searchQuery);
@@ -85,118 +86,123 @@ export default function WithAction() {
     navigate(`${location.pathname}?search=${searchQuery}`);
   };
   console.log(isAdmin);
-  if(isLoading)
-  {
-  return(  <MySpinner/>);
+  if (isLoading) {
+    return <MySpinner />;
   }
 
   return (
     <>
-    {!isLoading &&
-      <Box bg={"gray.100"} px={4}>
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
-          <IconButton
-            size={"md"}
-            icon={<HamburgerIcon />}
-            aria-label={"Open Menu"}
-            display={{ md: "none" }}
-            onClick={onOpen}
-          />
-          <HStack spacing={8} alignItems={"center"}>
-            <Box>Logo</Box>
-            <HStack
-              as={"nav"}
-              spacing={4}
-              display={{ base: "none", md: "flex" }}
-            >
-              {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
-              ))}
+      {!isLoading && (
+        <Box bg={"gray.100"} px={4}>
+          <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+            <IconButton
+              size={"md"}
+              icon={<HamburgerIcon />}
+              aria-label={"Open Menu"}
+              display={{ md: "none" }}
+              onClick={onOpen}
+            />
+            <HStack spacing={8} alignItems={"center"}>
+              <Box>Logo</Box>
+              <HStack
+                as={"nav"}
+                spacing={4}
+                display={{ base: "none", md: "flex" }}
+              >
+                {Links.map((link) => (
+                  <NavLink key={link}>{link}</NavLink>
+                ))}
+              </HStack>
             </HStack>
-          </HStack>
-          {(isFoodPage || isHomePage) && (
-            <>
-              {" "}
-              <Input
-                variant="outline"
-                placeholder="Search..."
-                size="md" // You can adjust the size here (sm, md, lg)
-                width="600px" // You can adjust the width here
-                mr={4}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                bg="white"
-                borderColor="gray.300"
-                borderRadius="md"
-                _focus={{
-                  borderColor: "teal.500",
-                  boxShadow: "outline",
-                }}
-              />
-              <Button
-                variant={"solid"}
-                colorScheme={"blue"}
-                bgSize={"sm"}
-                size={"sm"}
-                mr={80}
-                onClick={handleSearch}
-              >
-                Search
-              </Button>
-            </>
-          )}
-
-          <Flex alignItems={"center"}>
-            {(isFoodPage || isHomePage) && isAdmin && (
-              <Button
-                variant={"solid"}
-                colorScheme={"teal"}
-                size={"sm"}
-                mr={4}
-                leftIcon={<AddIcon />}
-                onClick={handleAddCategoryClick}
-              >
-                {isFoodPage ? "ADD Food" : "ADD Category"}
-              </Button>
-            )}
-           {
-              !isAdmin && (
+            {(isFoodPage || isHomePage) && (
+              <>
+                {" "}
+                <Input
+                  variant="outline"
+                  placeholder="Search..."
+                  size="md" // You can adjust the size here (sm, md, lg)
+                  width="600px" // You can adjust the width here
+                  mr={4}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  bg="white"
+                  borderColor="gray.300"
+                  borderRadius="md"
+                  _focus={{
+                    borderColor: "teal.500",
+                    boxShadow: "outline",
+                  }}
+                />
                 <Button
-                variant={"solid"}
-                colorScheme={"yellow"}
-                size={"sm"}
-                mr={4}
-                leftIcon={<AddIcon />}
-                onClick={()=>navigate('/cart')}
-              
-              >
-                CART
-              </Button>
-              )
-            }
+                  variant={"solid"}
+                  colorScheme={"blue"}
+                  bgSize={"sm"}
+                  size={"sm"}
+                  mr={80}
+                  onClick={handleSearch}
+                >
+                  Search
+                </Button>
+              </>
+            )}
 
-            <Menu>
-              <MenuButton
-                as={Button}
-                rounded={"full"}
-                variant={"link"}
-                cursor={"pointer"}
-                minW={0}
-              >
-                  <Avatar size="md" name={`${userData?.data.firstname} ${userData?.data.lastname}`} />
-              </MenuButton>
-              <MenuList>
-                <MenuItem onClick={() => navigate(`/user/${id}`)}>
-                  Profile
-                </MenuItem>
-                <MenuDivider />
-                <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
-              </MenuList>
-            </Menu>
+            <Flex alignItems={"center"}>
+              {(isFoodPage || isHomePage) && isAdmin && (
+                <Button
+                  variant={"solid"}
+                  colorScheme={"teal"}
+                  size={"sm"}
+                  mr={4}
+                  leftIcon={<AddIcon />}
+                  onClick={handleAddCategoryClick}
+                >
+                  {isFoodPage ? "ADD Food" : "ADD Category"}
+                </Button>
+              )}
+              {!isAdmin && !isCartPage && !isPaymentPage && (
+                <Button
+                  variant={"solid"}
+                  colorScheme={"yellow"}
+                  size={"sm"}
+                  mr={4}
+                  leftIcon={<AddIcon />}
+                  onClick={() => navigate("/cart")}
+                >
+                  CART
+                </Button>
+              )}
+
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  rounded={"full"}
+                  variant={"link"}
+                  cursor={"pointer"}
+                  minW={0}
+                >
+                  <Avatar
+                    size="md"
+                    name={`${userData?.data.firstname} ${userData?.data.lastname}`}
+                  />
+                </MenuButton>
+                <MenuList>
+                  <MenuItem onClick={() => navigate(`/user/${id}`)}>
+                    Profile
+                  </MenuItem>
+                  {!isAdmin && <MenuItem onClick={() => navigate(`/orders`)}>
+                    Orders
+                  </MenuItem>}
+                  {isAdmin && <MenuItem onClick={() => navigate(`/users`)}>
+                    All Users</MenuItem >}
+                  
+                  <MenuDivider />
+                  <MenuItem onClick={handleSignOut}>Sign Out</MenuItem>
+                </MenuList>
+              </Menu>
+            </Flex>
           </Flex>
-        </Flex>
-      
-      </Box>}
+        </Box>
+      )}
 
       {isAdmin && !isFoodPage ? (
         <AddCategory
@@ -209,7 +215,6 @@ export default function WithAction() {
           onClose={() => setShowAddCategory(false)}
         />
       )}
-      
     </>
   );
 }

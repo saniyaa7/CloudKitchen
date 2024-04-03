@@ -1,60 +1,48 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { API_END_POINT } from "../constant/constant";
+import { ICategory, GetFoodItemRequest, PatchFoodItemRequest, PostFoodItemRequest } from "../Type/type";
 
 
 
-const api_url = API_END_POINT;
-export const useFetchCategories = () => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["categories"],
-    queryFn: async () => await axios.get(`${api_url}/categories`),
-  });
 
-  return { data, isLoading };
-};
 
-export const useMutationCategory = () => {
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["category"],
-
-    mutationFn: (payload) => {
-      return axios.post(`http://localhost:8080/category`, payload);
-    },
-  });
-  return { mutate, isPending };
-};
-export const useFetchFoods = (id: string) => {
-  const { data, isLoading } = useQuery({
+export const useGetFoods = (id: string) => {
+  const { data, isLoading ,refetch} = useQuery({
     queryKey: ["foods"],
-    queryFn: async () => await axios.get(`${api_url}/foods/${id}`),
+    queryFn: async () => await axios.get(`${API_END_POINT}/foods/${id}`),
   });
 
-  return { data, isLoading };
+  return { data, isLoading,refetch };
 };
 
-export const useMutationFood = () => {
+export const usePostFood = () => {
   const { mutate, isPending } = useMutation({
     mutationKey: ["food"],
 
-    mutationFn: (payload) => {
-      return axios.post(`http://localhost:8080/food`, payload);
+    mutationFn: (payload:PostFoodItemRequest) => {
+      return axios.post(`${API_END_POINT}/food`, payload);
     },
   });
   return { mutate, isPending };
 };
 
 export const usePatchFood = () => {
-  const { mutate } = useMutation({
-    mutationFn: (payload) => {
-      return axios.patch(`http://localhost:8080/food`, payload);
+  const client=useQueryClient();
+  const { mutate ,isPending,isSuccess} = useMutation({
+    mutationFn: (payload:PatchFoodItemRequest) => {
+      return axios.patch(`${API_END_POINT}/food`, payload);
     },
-    onSuccess: () => {},
+    onSuccess: () => {    client.invalidateQueries({ queryKey: ['foods']})},
     onError: (err) => {
       alert(err);
     },
   });
   return {
     mutate,
+    isPending,
+    isSuccess
   };
 };
+
+

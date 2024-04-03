@@ -3,12 +3,12 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
 import { IUser } from "../../Type/type";
-import { SignupMutation } from "../../Hooks/register.hook";
+import { useSignupUser } from "../../Hooks/authentication.hook";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function SignUpForm() {
-  const { mutate, isError, isPending } = SignupMutation();
+  const { mutate, isError, isPending } = useSignupUser();
   const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({

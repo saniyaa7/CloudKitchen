@@ -1,15 +1,18 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
-import Home from "../component/Pages/Home";
+import Home from "../component/Pages/Category/Home";
 import Logout from "../component/SignUp-SignIn/Logout";
 
 import SignUp from "../component/SignUp-SignIn/SignUp";
 import MyNavBar from "../component/Header/MyNavBar";
 import SignIn from "../component/SignUp-SignIn/SignIn";
-import Food from "../component/Pages/Food";
-import Profile from "../component/Pages/Profile";
-import Payment from "../component/Pages/Payment";
-import CartPage from "../component/Pages/AddToCart";
+import Food from "../component/Pages/Food/Food";
+import Profile from "../component/Pages/User/Profile";
+import Payment from "../component/Pages/Order/Payment";
+import CartPage from "../component/Pages/Order/AddToCart";
+import Order from "../component/Pages/Order/Order";
+import OrderById from "../component/Pages/Order/OrderById";
+import Users from "../component/Pages/User/Users";
 
 
 
@@ -77,6 +80,18 @@ const Routes = () => {
         {
           path: '/cart',
           element :<CartPage/>
+        },
+        {
+          path: '/orders',
+          element :<Order/>
+        },
+        {
+          path:'/order/:id',
+          element :<OrderById/>
+        },
+        {
+          path:'/users',
+          element :<Users/>
         }
       ],
     },

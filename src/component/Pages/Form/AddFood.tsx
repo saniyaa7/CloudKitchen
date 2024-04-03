@@ -1,43 +1,85 @@
-import React, { useState } from "react";
-import { useDisclosure, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, FormControl, FormLabel, Input, ModalFooter, Alert, AlertIcon, AlertDialogOverlay, AlertDialog, AlertDialogContent, AlertDialogFooter, AlertDialogBody, AlertDialogHeader, useToast, Select, NumberInputField, NumberInput, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper } from "@chakra-ui/react";
+import React, { ChangeEvent, useState } from "react";
+import {
+  useDisclosure,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  Input,
+  ModalFooter,
+  Alert,
+  AlertIcon,
+  AlertDialogOverlay,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogBody,
+  AlertDialogHeader,
+  useToast,
+  Select,
+  NumberInputField,
+  NumberInput,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from "@chakra-ui/react";
 import axios from "axios"; // Import axios for HTTP requests
-import { useMutationCategory, useMutationFood } from "../../../Hooks/food.hook";
+import {  usePostFood } from "../../../Hooks/food.hook";
 import { useNavigate, useParams } from "react-router-dom";
+import { PostFoodItemRequest } from "../../../Type/type";
 // import { FoodInitialValues } from "../../../Type/initialValues";
 // import { useMutation, useQuery } from "@tanstack/react-query";
 
+interface AddFoodProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
 
-
-
-
-function AddFood({ isOpen, onClose }) {
-  const { id } = useParams();
+function AddFood({ isOpen, onClose }: AddFoodProps) {
+  const { id } = useParams<{ id: string }>(); 
   const navigate = useNavigate();
   const [isConflict, setIsConflict] = useState(false);
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
-  const { mutate, isPending } = useMutationFood();
-  const [values, setValues] = useState({
-    category_id: parseInt(id),
+  const { mutate, isPending } = usePostFood();
+  const [values, setValues] = useState<PostFoodItemRequest>({
+    category_id : id ? parseInt(id) : 0,
     price: 0,
     name: "",
     is_veg: 0,
     is_avail: 0,
     description: "",
-    img_url: ""
+    img_url: "",
   });
-  const toast = useToast()
+  const toast = useToast();
 
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const parsedValue = name === 'is_avail' || name === 'price' || name==='is_veg' ? parseInt(value) : value;
+    const parsedValue =
+      name === "is_avail" || name === "price" || name === "is_veg"
+        ? parseInt(value)
+        : value;
     setValues({
       ...values,
-      [name]: parsedValue
+      [name]: parsedValue,
     });
   };
-
-
+  const handleFoodTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    const parsedValue =
+      name === "is_avail" || name === "price" || name === "is_veg"
+        ? parseInt(value)
+        : value;
+    setValues({
+      ...values,
+      [name]: parsedValue,
+    });
+  };
 
   const handleSubmit = async () => {
     try {
@@ -53,19 +95,23 @@ function AddFood({ isOpen, onClose }) {
         return;
       }
 
-      const response = await mutate(values, {
+      const response = mutate(values, {
         onSuccess: () => {
           onClose(); // Close the modal after successful submission
+
           // Navigate to a specific route upon successful submission
         },
         onError: (error) => {
-          if (error.response.status === 409) {
+          console.log(error);
+          if (axios.isAxiosError(error) && error.response?.status === 409) {
             setIsConflict(true);
           } else {
             console.error("Error submitting form:", error);
-            alert("An error occurred while submitting the form. Please try again.");
+            alert(
+              "An error occurred while submitting the form. Please try again."
+            );
           }
-        }
+        },
       });
 
       // Handle other responses if needed
@@ -77,8 +123,6 @@ function AddFood({ isOpen, onClose }) {
 
   return (
     <>
-
-
       <Modal
         initialFocusRef={initialRef}
         finalFocusRef={finalRef}
@@ -89,7 +133,7 @@ function AddFood({ isOpen, onClose }) {
         <ModalContent>
           <ModalHeader>Create Food Dishes</ModalHeader>
           <ModalCloseButton />
-          <ModalBody pb={6}>
+          <ModalBody pb={6} maxH="80vh" overflowY="auto">
             <FormControl isRequired>
               <FormLabel>Food Name</FormLabel>
               <Input
@@ -99,7 +143,6 @@ function AddFood({ isOpen, onClose }) {
                 value={values.name}
                 onChange={handleChange}
               />
-
             </FormControl>
             <FormControl isRequired mt={4}>
               <FormLabel>Description</FormLabel>
@@ -109,24 +152,22 @@ function AddFood({ isOpen, onClose }) {
                 value={values.description}
                 onChange={handleChange}
               />
-
             </FormControl>
-
-
 
             <FormControl isRequired mt={4}>
               <FormLabel>Price</FormLabel>
               <NumberInput defaultValue={0} max={500}>
-                <NumberInputField name="price"
+                <NumberInputField
+                  name="price"
                   placeholder="Enter price"
                   value={values.price}
-                  onChange={handleChange} />
+                  onChange={handleChange}
+                />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
-
             </FormControl>
 
             <FormControl isRequired mt={4}>
@@ -134,33 +175,27 @@ function AddFood({ isOpen, onClose }) {
               <Select
                 name="is_veg"
                 value={values.is_veg}
-                onChange={handleChange}
-              
+                onChange={handleFoodTypeChange}
               >
                 <option value={1}>Veg</option>
                 <option value={0}>Non-Veg</option>
               </Select>
-
             </FormControl>
-
-
-
-
-
 
             <FormControl isRequired mt={4}>
               <FormLabel>Available</FormLabel>
-              <NumberInput defaultValue={0} >
-                <NumberInputField name="is_avail"
+              <NumberInput defaultValue={0}>
+                <NumberInputField
+                  name="is_avail"
                   placeholder="Enter availability"
                   value={values.is_avail ? 1 : 0}
-                  onChange={handleChange} />
+                  onChange={handleChange}
+                />
                 <NumberInputStepper>
                   <NumberIncrementStepper />
                   <NumberDecrementStepper />
                 </NumberInputStepper>
               </NumberInput>
-
             </FormControl>
             <FormControl isRequired mt={4}>
               <FormLabel>Image URL</FormLabel>
@@ -170,12 +205,16 @@ function AddFood({ isOpen, onClose }) {
                 value={values.img_url}
                 onChange={handleChange}
               />
-
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={handleSubmit} disabled={isPending}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={handleSubmit}
+              disabled={isPending}
+            >
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>
@@ -203,7 +242,6 @@ function AddFood({ isOpen, onClose }) {
           </AlertDialogOverlay>
         </AlertDialog>
       )}
-
     </>
   );
 }

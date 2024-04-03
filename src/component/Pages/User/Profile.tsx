@@ -8,10 +8,10 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useFetchUser } from "../../Hooks/register.hook";
+import { useGetUser } from "../../../Hooks/user.hook";
 
 const Profile = () => {
-  const { data, isLoading } = useFetchUser();
+  const { data, isLoading } = useGetUser();
   const user = data?.data;
 
   if (isLoading) {
@@ -40,6 +40,7 @@ const Profile = () => {
         p={8}
         bg="white"
         boxShadow="lg"
+        mt={10}
       >
         <Avatar size="xl" name={`${user.firstname} ${user.lastname}`} />
         <VStack spacing={4} align="stretch" mt={6}>

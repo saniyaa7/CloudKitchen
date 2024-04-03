@@ -9,4 +9,13 @@ export const UserInitialValues = {
   role: "admin",
 };
 
- 
+export const PatchFoodInitialValues = {
+  id: 0,
+  category_id:0,
+  price: 0,
+  name: "",
+  is_veg: 0,
+  is_avail: 0,
+  description: "",
+  img_url: "",
+};

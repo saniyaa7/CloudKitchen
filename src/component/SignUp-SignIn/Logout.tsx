@@ -4,7 +4,6 @@ const Logout = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-  
     navigate("/", { replace: true });
   };
 
